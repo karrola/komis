@@ -33,3 +33,6 @@ htmlcov/
 *.cover
 *.pytest_cache/
 .tox/
+
+# Django database
+db.sqlite3
