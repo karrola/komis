@@ -1,3 +1,4 @@
+# myapp/management/commands/import_offers.py
 import csv
 import time
 from datetime import datetime
@@ -9,32 +10,23 @@ from django.db import transaction
 from main.models import Car, Offer, Feature
 
 
-BATCH_OFFERS = 100  # ile Offer zapisać jednocześnie (bulk_create)
+BATCH_OFFERS = 10000  # ile Offer zapisać jednocześnie (bulk_create)
 
 
 def safe_int(val):
     if val is None or val == '':
         return None
-    try:
-        return int(float(val))
-    except Exception:
-        return None
+    return int(float(val))
 
 def safe_float(val):
     if val is None or val == '':
         return None
-    try:
-        return float(val)
-    except Exception:
-        return None
+    return float(val)
 
 def safe_decimal(val):
     if val is None or val == '':
         return None
-    try:
-        return Decimal(str(val))
-    except (InvalidOperation, ValueError):
-        return None
+    return Decimal(str(val))
 
 def parse_date_try_formats(s):
     if not s:
@@ -87,6 +79,9 @@ class Command(BaseCommand):
         progress_interval = options['progress_interval']
 
         offers_to_create = []
+        cars_to_create = []
+        feature_per_car = []
+        indices = []
         total_offers = 0
         total_cars = 0
 
@@ -104,7 +99,7 @@ class Command(BaseCommand):
                         return row.get(k, '').strip() if row.get(k) is not None else ''
 
                     # --- przygotuj Car ---
-                    car = Car.objects.create(
+                    car = Car(
                         vehicle_brand = g('Vehicle_brand') or None,
                         vehicle_model = g('Vehicle_model') or None,
                         vehicle_version = g('Vehicle_version') or None,
@@ -125,15 +120,17 @@ class Command(BaseCommand):
                         first_registration_date = (parse_date_try_formats(g('First_registration_date')) and parse_date_try_formats(g('First_registration_date')).date()) or None,
                         sold_price = safe_decimal(g('Price')),
                         condition = g('Condition') or None,
+                        source_index = safe_int(g('Index'))
                     )
-                    total_cars += 1
+                    cars_to_create.append(car)
+                    indices.append(car.source_index)
 
                     # --- obsługa Features: sparsuj i przypisz ManyToMany ---
+                    to_add = []
                     features_raw = g('Features') or None
                     if features_raw:
                         feature_names = parse_features_text(features_raw)
                         # dla każdej nazwy weź Feature z cache lub utwórz i dodaj do cache
-                        to_add = []
                         for name in feature_names:
                             if not name:
                                 continue
@@ -142,9 +139,7 @@ class Command(BaseCommand):
                                 feat, created = Feature.objects.get_or_create(name=name)
                                 feature_cache[name] = feat
                             to_add.append(feat)
-                        if to_add:
-                            # add wymaga zapisania car — mamy zapisane; dodaj ID-ami
-                            car.features.add(*to_add)
+                    feature_per_car.append(to_add)
 
                     # --- przygotuj Offer (do bulk_create) ---
                     price = safe_decimal(g('Price') or None)
@@ -168,9 +163,32 @@ class Command(BaseCommand):
                     # batch save offers
                     if len(offers_to_create) >= BATCH_OFFERS:
                         with transaction.atomic():
+                            Car.objects.bulk_create(cars_to_create, batch_size=BATCH_OFFERS)
                             Offer.objects.bulk_create(offers_to_create, batch_size=BATCH_OFFERS)
+
+                            db_cars = Car.objects.filter(source_index__in=indices)
+                            car_map = {c.source_index: c.pk for c in db_cars}
+
+                            # teraz zbuduj linki, upewniając się, że używasz feature_id (int)
+                            print("adding M2M...")
+                            links = []
+                            for j, src_idx in enumerate(indices):
+                                #if j%50 == 0 : print(f"jestem na przykladzie {j}")
+                                car_pk = car_map.get(src_idx)
+                                if not car_pk:
+                                    continue  # fallback jeśli coś poszło nie tak
+                                # feature_per_car[j] może zawierać Feature lub id — ujednolicamy do id
+                                for fid in feature_per_car[j]:
+                                    fid_id = fid.pk if hasattr(fid, 'pk') else int(fid)
+                                    links.append(Car.features.through(car_id=car_pk, feature_id=fid_id))
+                            Car.features.through.objects.bulk_create(links, ignore_conflicts=True)
+                        
                         total_offers += len(offers_to_create)
+                        total_cars += len(cars_to_create)
                         offers_to_create = []
+                        cars_to_create = []
+                        indices = []
+                        feature_per_car = []
 
                     # progress
                     if (i % progress_interval) == 0:
@@ -183,8 +201,30 @@ class Command(BaseCommand):
                 # ostatnia partia offers
                 if offers_to_create:
                     with transaction.atomic():
+                        Car.objects.bulk_create(cars_to_create, batch_size=BATCH_OFFERS)
                         Offer.objects.bulk_create(offers_to_create, batch_size=BATCH_OFFERS)
+
+                        db_cars = Car.objects.filter(source_index__in=indices)
+                        car_map = {c.source_index: c.pk for c in db_cars}
+
+                        # teraz zbuduj linki, upewniając się, że używasz feature_id (int)
+                        print("adding M2M...")
+                        links = []
+                        for j, src_idx in enumerate(indices):
+                            #if j%50 == 0 : print(f"jestem na przykladzie {j}")
+                            car_pk = car_map.get(src_idx)
+                            if not car_pk:
+                                continue  # fallback jeśli coś poszło nie tak
+                            # feature_per_car[j] może zawierać Feature lub id — ujednolicamy do id
+                            for fid in feature_per_car[j]:
+                                fid_id = fid.pk if hasattr(fid, 'pk') else int(fid)
+                                links.append(Car.features.through(car_id=car_pk, feature_id=fid_id))
+                        Car.features.through.objects.bulk_create(links, ignore_conflicts=True)
+
+                        # bulk insert do through table
+                        Car.features.through.objects.bulk_create(links, ignore_conflicts=True)
                     total_offers += len(offers_to_create)
+                    total_cars += len(cars_to_create)
 
             total_elapsed = time.time() - start_time
             final_msg = (f"Import finished. Rows processed: {i}. Cars created: {total_cars}. Offers created: {total_offers}. "

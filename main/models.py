@@ -30,6 +30,7 @@ class Car(models.Model):
     sold_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     condition = models.CharField(max_length=100, null=True, blank=True)
     features = models.ManyToManyField(Feature, blank=True, related_name='cars')
+    source_index = models.BigIntegerField(null=True, blank=True, db_index=True)
 
     def __str__(self):
         brand = self.vehicle_brand or ''
