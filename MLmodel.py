@@ -32,7 +32,7 @@ if 0:
 
 train_set, test_set = train_test_split(cars, test_size=0.15 , random_state=0)
 
-if 0:
+if 1:
     df = train_set[['Price', 'Production_year', 'Mileage_km', 'Condition', 'Power_HP', 'CO2_emissions', 'Currency']].copy()
     for i, row in df.iterrows():
         if row['Currency'] == 'EUR':
@@ -53,14 +53,53 @@ if 0:
 # plt.show()
 df = train_set[['Price', 'Production_year', 'Mileage_km', 'Condition', 'Power_HP', 'CO2_emissions', 'Currency']].copy()
 df['Years'] = 2021 - df['Production_year']
-avg_prices = df.groupby('Years')['Price'].mean()
-median_prices = df.groupby('Years')['Price'].median()
 
 fig, axis = plt.subplots(figsize=(10, 6))
-axis.scatter(df['Years'], df['Price'], alpha=0.5)
+if 0:
+    avg_prices = df.groupby('Years')['Price'].mean()
+    median_prices = df.groupby('Years')['Price'].median()
+    axis.scatter(df['Years'], df['Price'], alpha=0.5)
+    axis.scatter(median_prices.index, median_prices, c='green', alpha=1)
+    axis.scatter(avg_prices.index, avg_prices, c='red', alpha=0.7)
+    tmp = pd.concat([avg_prices, median_prices], axis=1)
+    print(tmp)
+    plt.show()
 
-axis.scatter(median_prices.index, avg_prices, c='green', alpha=1)
-axis.scatter(avg_prices.index, avg_prices, c='red', alpha=0.7)
-tmp = pd.concat([avg_prices, median_prices], axis=1)
-print(tmp)
-plt.show()
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
+from copy import deepcopy
+
+def currency_conversion(row, rules: dict):
+    row['Price'] = row['Price'] * rules[row['Currency']]
+    return row
+
+def make_years(row, current_year: int):
+    row['Years'] = current_year - row['Production_year']
+    return row
+
+train_set.apply(lambda row: currency_conversion(row, {'PLN': 1, 'EUR': 4.26}))
+train_set.apply(lambda row: make_years(row, 2022))
+
+num_attributes = ['Years', 'Mileage_km', 'Power_HP', 'CO2_emissions']
+cat_attributes = ['Condition']
+
+num_pipeline = Pipeline([
+    ('imputer', SimpleImputer(strategy='median')),
+    ('scaler', StandardScaler()),
+])
+
+cat_pipeline = Pipeline([
+    ('imputer', SimpleImputer(strategy='most_frequent')),
+    ('one-hot-encoder', OneHotEncoder()),
+])
+
+final_pipeline = ColumnTransformer(transformers= [
+    ('nums', num_pipeline, num_attributes),
+    ('cats', cat_pipeline, cat_attributes),
+],
+remainder='drop',
+n_jobs=-1,
+)
