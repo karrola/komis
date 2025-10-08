@@ -3,11 +3,16 @@
 {% block title %} Rejestracja {% endblock %}
 
 {% block content %}
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Zarejestruj się</button>
-    </form>
+<h2 class="text-center mb-4">Rejestracja</h2>
 
-    <p>Masz już konto? <a href="{% url 'login' %}">Zaloguj się</a></p>
+<form action="" method="POST" class="mx-auto" style="max-width: 400px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary w-100">Zarejestruj się</button>
+</form>
+
+<p class="text-center mt-3">
+    Masz już konto? <a href="{% url 'login' %}">Zaloguj się</a>
+</p>
 {% endblock %}

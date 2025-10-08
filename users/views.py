@@ -6,9 +6,6 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-def auth_page_view(request):
-    return render(request, "users/auth_page.html")
-
 def sign_up_view(request):
     if request.method == "POST":
         form = UserForm(request.POST)

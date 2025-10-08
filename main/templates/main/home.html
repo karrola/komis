@@ -1,11 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if user.is_authenticated %}
-    <p>Cześć, {{ user.email }}!</p>
-    <a href="{% url 'logout' %}">Logout</a>
-{% else %}
-    <p>Nie jesteś zalogowany.</p>
-    <a href="{% url 'login' %}">Login</a>
-{% endif %}
+
+<header>
+    <div>tu będzie wyszukiwarka</div>
+</header>
+
+<main>
+    <h1>Samochody osobowe - oferty</h1>
+    <ul>
+        {% for car in cars %}
+            <li><a href="#">
+                <article>
+                    <h1></h1>
+                    
+                </article>
+            </a></li>
+        {% endfor %}
+    </ul>
+</main>
+
 {% endblock %}
