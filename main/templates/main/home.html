@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
+{% load humanize %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'main/css/home.css' %}">
+{% endblock %}
+
 {% block content %}
 
 <header>
@@ -7,15 +14,46 @@
 </header>
 
 <main>
-    <h1>Samochody osobowe - oferty</h1>
-    <ul>
-        {% for car in cars %}
-            <li><a href="#">
-                <article>
-                    <h1></h1>
-                    
-                </article>
-            </a></li>
+    
+    <h1 class="h1 fw-bold my-4 text-center">Samochody osobowe - oferty</h1>
+    <ul class="list-unstyled container my-4">
+        {% for offer in offers %}
+            <li class="mb-4">
+                <a href="#" class="text-decoration-none text-dark">
+                    <article class="p-4 border rounded shadow-sm offer-card bg-white">
+                        <h1 class="h5 fw-bold mb-1">
+                            {{ offer.car.vehicle_brand }}
+                            {% if offer.car.vehicle_model %} {{ offer.car.vehicle_model }}{% endif %}
+                            {% if offer.car.vehicle_version %} {{ offer.car.vehicle_version }}{% endif %}
+                        </h1>
+                        <h4 class="h6 text-secondary mb-3">
+                            {{ offer.car.displacement_cm3 }} cm³ • {{ offer.car.power_hp }} KM
+                        </h4>
+
+                        <h3 class="h6 mb-3 text-muted">
+                            <i class="fa-solid fa-road me-1"></i>{{ offer.car.mileage_km }} km
+                            <span class="mx-2">•</span>
+                            <i class="fa-solid fa-gas-pump me-1"></i>{{ offer.car.fuel_type }}
+                            <span class="mx-2">•</span>
+                            <i class="fa-solid fa-gears me-1"></i>{{ offer.car.transmission }}
+                            <span class="mx-2">•</span>
+                            <i class="fa-solid fa-calendar me-1"></i>{{ offer.car.production_year }}
+                        </h3>
+
+                        <h2 class="h4 text-primary fw-bold mb-3">{{ offer.price }} zł</h2>
+
+                        <address class="text-muted small mb-1">
+                            <i class="fa-solid fa-user me-1"></i>{{ offer.seller.first_name }}
+                            <span class="mx-2">•</span>
+                            <i class="fa-solid fa-location-dot me-1"></i>{{ offer.offer_location }}
+                        </address>
+
+                        <p class="text-muted small fst-italic mb-0">
+                            Opublikowano {{ offer.offer_publication_date|naturaltime }}
+                        </p>
+                    </article>
+                </a>
+            </li>
         {% endfor %}
     </ul>
 </main>
