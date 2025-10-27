@@ -41,6 +41,7 @@ class Car(models.Model):
 
 class Offer(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='offers')
+    image = models.ImageField(upload_to='car_offers/', blank=True, null=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     active = models.BooleanField(default=True)     # czy oferta jest aktywna
     if_sold = models.BooleanField(default=False)   # czy przedmiot sprzedany

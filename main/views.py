@@ -6,5 +6,6 @@ from .models import Car, Offer
 
 def home_view(request):
     offers = Offer.objects.filter(active = True, if_sold = False).all()
-    return render(request, "main/home.html", {'offers': offers})
+    active_offers_count = Offer.objects.filter(active=True).count()
+    return render(request, "main/home.html", {'offers': offers, 'active_offers_count': active_offers_count})
 
