@@ -14,14 +14,8 @@ from pathlib import Path
 import dj_database_url
 import os
 from dotenv import load_dotenv
-from django.contrib.auth import get_user_model
 load_dotenv()
 
-if os.getenv("DJANGO_ADMIN_PASSWORD"):
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser("admin", "admin@admin.pl", os.getenv("DJANGO_ADMIN_PASSWORD"))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
