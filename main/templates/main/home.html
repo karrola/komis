@@ -10,16 +10,17 @@
 
 {% block content %}
 
-<header class="filters-bar sticky-top bg-white shadow-sm py-3 mb-4 border-bottom">
+<header class="filters-bar bg-white py-3 px-5 mb-4">
   <div class="container-fluid">
     <form method="get">
+      <input type="hidden" name="page" value="1">
       <div class="row g-3">
 
         <!-- 🔽 Marka -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Marka</label>
           <div class="dropdown w-100">
-            <button class="btn btn-outline-primary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
+            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
               Wybierz
             </button>
             <div class="dropdown-menu p-2 shadow filter-dropdown">
@@ -37,7 +38,7 @@
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Rodzaj paliwa</label>
           <div class="dropdown w-100">
-            <button class="btn btn-outline-primary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
+            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
               Wybierz
             </button>
             <div class="dropdown-menu p-2 shadow filter-dropdown">
@@ -55,7 +56,7 @@
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Napęd</label>
           <div class="dropdown w-100">
-            <button class="btn btn-outline-primary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
+            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
               Wybierz
             </button>
             <div class="dropdown-menu p-2 shadow filter-dropdown">
@@ -73,7 +74,7 @@
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Skrzynia biegów</label>
           <div class="dropdown w-100">
-            <button class="btn btn-outline-primary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
+            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
               Wybierz
             </button>
             <div class="dropdown-menu p-2 shadow filter-dropdown">
@@ -91,7 +92,7 @@
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Typ nadwozia</label>
           <div class="dropdown w-100">
-            <button class="btn btn-outline-primary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
+            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
               Wybierz
             </button>
             <div class="dropdown-menu p-2 shadow filter-dropdown">
@@ -108,30 +109,30 @@
         <!-- 🔽 Rok -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Rok produkcji</label>
-          <div class="input-group input-group-sm">
-            {{ filter.form.production_year__gte|add_class:"form-control text-center" }}
+          <div class="input-group">
+            {{ filter.form.production_year__gte|add_class:"form-control form-control-sm text-center" }}
             <span class="input-group-text">-</span>
-            {{ filter.form.production_year__lte|add_class:"form-control text-center" }}
+            {{ filter.form.production_year__lte|add_class:"form-control form-control-sm text-center" }}
           </div>
         </div>
 
         <!-- 🔽 Cena -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Cena (PLN)</label>
-          <div class="input-group input-group-sm">
-            {{ filter.form.price__gte|add_class:"form-control text-center" }}
+          <div class="input-group">
+            {{ filter.form.price__gte|add_class:"form-control form-control-sm text-center" }}
             <span class="input-group-text">-</span>
-            {{ filter.form.price__lte|add_class:"form-control text-center" }}
+            {{ filter.form.price__lte|add_class:"form-control form-control-sm text-center" }}
           </div>
         </div>
 
         <!-- 🔽 Przebieg -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Przebieg (km)</label>
-          <div class="input-group input-group-sm">
-            {{ filter.form.mileage_km__gte|add_class:"form-control text-center" }}
+          <div class="input-group">
+            {{ filter.form.mileage_km__gte|add_class:"form-control form-control-sm text-center" }}
             <span class="input-group-text">-</span>
-            {{ filter.form.mileage_km__lte|add_class:"form-control text-center" }}
+            {{ filter.form.mileage_km__lte|add_class:"form-control form-control-sm text-center" }}
           </div>
         </div>
 
@@ -208,16 +209,30 @@
         {% endfor %}
     </ul>
 
-    <div class="mt-3">
+   <nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+
         {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">← Poprzednia</a>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">← Poprzednia</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">← Poprzednia</span></li>
         {% endif %}
 
-        <span>Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span>
+        <li class="page-item disabled">
+            <span class="page-link">Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span>
+        </li>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">Następna →</a>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">Następna →</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Następna →</span></li>
         {% endif %}
-    </div>
+
+    </ul>
+  </nav>
 
 {% endblock %}

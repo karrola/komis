@@ -15,11 +15,14 @@ def home_view(request):
     paginator = Paginator(offer_filter.qs, 20)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    query_params = request.GET.copy()
+    query_params.pop('page', None)  # usuwa page jeśli istnieje
 
     context = {
         'filter': offer_filter,
         'filtered_count': filtered_count,
         'page_obj': page_obj,
+        'query_params': query_params.urlencode(),
     }
 
     return render(request, "main/home.html", context)
