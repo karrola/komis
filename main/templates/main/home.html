@@ -10,13 +10,13 @@
 
 {% block content %}
 
-<header class="filters-bar bg-white py-3 px-5 mb-4">
+<header class="filters-bar bg-white py-3 px-5 mb-4 mx-auto" style="max-width: 1300px">
   <div class="container-fluid">
     <form method="get">
       <input type="hidden" name="page" value="1">
       <div class="row g-3">
 
-        <!-- 🔽 Marka -->
+        <!-- Marka -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Marka</label>
           <div class="dropdown w-100">
@@ -34,7 +34,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Rodzaj paliwa -->
+        <!-- Rodzaj paliwa -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Rodzaj paliwa</label>
           <div class="dropdown w-100">
@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Napęd -->
+        <!-- Napęd -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Napęd</label>
           <div class="dropdown w-100">
@@ -70,7 +70,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Skrzynia -->
+        <!-- Skrzynia -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Skrzynia biegów</label>
           <div class="dropdown w-100">
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Typ nadwozia -->
+        <!-- Typ nadwozia -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Typ nadwozia</label>
           <div class="dropdown w-100">
@@ -106,7 +106,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Rok -->
+        <!-- Rok -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Rok produkcji</label>
           <div class="input-group">
@@ -116,7 +116,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Cena -->
+        <!-- Cena -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Cena (PLN)</label>
           <div class="input-group">
@@ -126,7 +126,7 @@
           </div>
         </div>
 
-        <!-- 🔽 Przebieg -->
+        <!-- Przebieg -->
         <div class="col-6 col-md-4 col-lg-2 filter-col">
           <label class="form-label fw-semibold small">Przebieg (km)</label>
           <div class="input-group">
@@ -138,7 +138,7 @@
 
       </div>
 
-      <!-- 🔘 Przyciski -->
+      <!-- Przyciski -->
       <div class="d-flex gap-2 mt-4 justify-content-end">
         <button type="submit" class="btn btn-primary px-4">Filtruj</button>
         <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4">Wyczyść</a>

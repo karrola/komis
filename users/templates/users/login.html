@@ -3,22 +3,28 @@
 {% block title %} Logowanie {% endblock %}
 
 {% block content %}
-<h2 class="text-center mb-4">Logowanie</h2>
+<h2 class="text-center my-4">Logowanie</h2>
 
 <form method="post" class="mx-auto" style="max-width: 400px;">
     {% csrf_token %}
-    {{ form.non_field_errors }}
+    {% for error in form.non_field_errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endfor %}
 
-    <div class="mb-3">
-        {{ form.username.label_tag }}
+    <div class="my-3">
+       <label class="form-label mb-1">{{ form.username.label_tag }}</label>
         {{ form.username }}
-        {{ form.username.errors }}
+        {% for error in form.username.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
     </div>
 
-    <div class="mb-3">
-        {{ form.password.label_tag }}
+    <div class="my-3">
+        <label class="form-label mb-1">{{ form.password.label_tag }}</label>
         {{ form.password }}
-        {{ form.password.errors }}
+        {% for error in form.password.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <button type="submit" class="btn btn-primary w-100">Zaloguj</button>
