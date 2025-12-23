@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load static %}
 {% load widget_tweaks %}
+{% load filters_extras %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'main/css/home.css' %}">
@@ -10,147 +11,68 @@
 
 {% block content %}
 
-<header class="filters-bar bg-white py-3 px-5 mb-4 mx-auto" style="max-width: 1600px">
-  <div class="container-fluid">
-    <form method="get">
-      <input type="hidden" name="page" value="1">
-      <div class="row g-3">
+<header class="filters-bar bg-white py-3 px-4 mb-4 mx-auto" style="max-width: 1600px">
+  <form method="get">
+    <input type="hidden" name="page" value="1">
 
-        <!-- Marka -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Marka</label>
-          <div class="dropdown w-100">
-            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
-              Wybierz
-            </button>
-            <div class="dropdown-menu p-2 shadow filter-dropdown">
-              {% for checkbox in filter.form.brand %}
-              <div class="form-check">
-                {{ checkbox.tag }}
-                <label class="form-check-label text-wrap">{{ checkbox.choice_label }}</label>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
+    <div class="row g-3">
+
+      {% include "main/include/checkbox.html" with field=filter.form.brand label="Marka" param_name="brand" %}
+      {% include "main/include/checkbox.html" with field=filter.form.condition label="Stan" param_name="condition" %}
+
+      <!-- Cena -->
+      <div class="col-6 col-md-4 col-lg-2 filter-col">
+        <label class="form-label fw-semibold small">Cena (PLN)</label>
+        <div class="input-group">
+          {{ filter.form.price__gte|add_class:"form-control form-control-sm text-center" }}
+          <span class="input-group-text">-</span>
+          {{ filter.form.price__lte|add_class:"form-control form-control-sm text-center" }}
         </div>
-
-        <!-- Rodzaj paliwa -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Rodzaj paliwa</label>
-          <div class="dropdown w-100">
-            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
-              Wybierz
-            </button>
-            <div class="dropdown-menu p-2 shadow filter-dropdown">
-              {% for checkbox in filter.form.fuel %}
-              <div class="form-check">
-                {{ checkbox.tag }}
-                <label class="form-check-label text-wrap">{{ checkbox.choice_label }}</label>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Napęd -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Napęd</label>
-          <div class="dropdown w-100">
-            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
-              Wybierz
-            </button>
-            <div class="dropdown-menu p-2 shadow filter-dropdown">
-              {% for checkbox in filter.form.drive %}
-              <div class="form-check">
-                {{ checkbox.tag }}
-                <label class="form-check-label text-wrap">{{ checkbox.choice_label }}</label>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Skrzynia -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Skrzynia biegów</label>
-          <div class="dropdown w-100">
-            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
-              Wybierz
-            </button>
-            <div class="dropdown-menu p-2 shadow filter-dropdown">
-              {% for checkbox in filter.form.transmission %}
-              <div class="form-check">
-                {{ checkbox.tag }}
-                <label class="form-check-label text-wrap">{{ checkbox.choice_label }}</label>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Typ nadwozia -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Typ nadwozia</label>
-          <div class="dropdown w-100">
-            <button class="btn btn-outline-secondary w-100 text-start filter-btn" type="button" data-bs-toggle="dropdown">
-              Wybierz
-            </button>
-            <div class="dropdown-menu p-2 shadow filter-dropdown">
-              {% for checkbox in filter.form.type %}
-              <div class="form-check">
-                {{ checkbox.tag }}
-                <label class="form-check-label text-wrap">{{ checkbox.choice_label }}</label>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Rok -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Rok produkcji</label>
-          <div class="input-group">
-            {{ filter.form.production_year__gte|add_class:"form-control form-control-sm text-center" }}
-            <span class="input-group-text">-</span>
-            {{ filter.form.production_year__lte|add_class:"form-control form-control-sm text-center" }}
-          </div>
-        </div>
-
-        <!-- Cena -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Cena (PLN)</label>
-          <div class="input-group">
-            {{ filter.form.price__gte|add_class:"form-control form-control-sm text-center" }}
-            <span class="input-group-text">-</span>
-            {{ filter.form.price__lte|add_class:"form-control form-control-sm text-center" }}
-          </div>
-        </div>
-
-        <!-- Przebieg -->
-        <div class="col-6 col-md-4 col-lg-2 filter-col">
-          <label class="form-label fw-semibold small">Przebieg (km)</label>
-          <div class="input-group">
-            {{ filter.form.mileage_km__gte|add_class:"form-control form-control-sm text-center" }}
-            <span class="input-group-text">-</span>
-            {{ filter.form.mileage_km__lte|add_class:"form-control form-control-sm text-center" }}
-          </div>
-        </div>
-
       </div>
 
-      <!-- Przyciski -->
-      <div class="d-flex gap-2 mt-4 justify-content-end">
-        <button type="submit" class="btn btn-primary px-4">Filtruj</button>
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4">Wyczyść</a>
+      <!-- Przebieg -->
+      <div class="col-6 col-md-4 col-lg-2 filter-col">
+        <label class="form-label fw-semibold small">Przebieg (km)</label>
+        <div class="input-group">
+          {{ filter.form.mileage_km__gte|add_class:"form-control form-control-sm text-center" }}
+          <span class="input-group-text">-</span>
+          {{ filter.form.mileage_km__lte|add_class:"form-control form-control-sm text-center" }}
+        </div>
       </div>
-    </form>
-  </div>
+
+      <!-- Rok -->
+      <div class="col-6 col-md-4 col-lg-2 filter-col">
+        <label class="form-label fw-semibold small">Rok produkcji</label>
+        <div class="input-group">
+          {{ filter.form.production_year__gte|add_class:"form-control form-control-sm text-center" }}
+          <span class="input-group-text">-</span>
+          {{ filter.form.production_year__lte|add_class:"form-control form-control-sm text-center" }}
+        </div>
+      </div>
+
+      {% include "main/include/checkbox.html" with field=filter.form.transmission label="Skrzynia biegów" param_name="transmission" %}
+      {% include "main/include/checkbox.html" with field=filter.form.fuel label="Rodzaj paliwa" param_name="fuel" %}
+      {% include "main/include/checkbox.html" with field=filter.form.features label="Wyposażenie" param_name="features" %}
+      {% include "main/include/checkbox.html" with field=filter.form.drive label="Napęd" param_name="drive" %}
+      {% include "main/include/checkbox.html" with field=filter.form.type label="Typ nadwozia" param_name="type" %}
+      {% include "main/include/checkbox.html" with field=filter.form.colour label="Kolor" param_name="colour" %}
+      {% include "main/include/checkbox.html" with field=filter.form.province label="Województwo" param_name="province" %}
+      {% include "main/include/checkbox.html" with field=filter.form.city label="Miasto" param_name="city" %}
+
+    </div>
+
+    <div class="d-flex gap-2 mt-4 justify-content-end">
+      <button type="submit" class="btn btn-primary px-4">Filtruj</button>
+      <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4">Wyczyść</a>
+    </div>
+
+  </form>
 </header>
 
 <main class="mx-auto" style="max-width: 1600px;">
     
     <h1 class="h2 fw-bold my-4 text-center">Samochody osobowe - {{filtered_count}} ofert</h1>
-    <ul class="list-unstyled container my-4">
+    <ul class="list-unstyled px-4 my-4 w-100 mx-auto">
         {% for offer in page_obj %}
             <li class="mb-4">
                 <a href="{% url 'offer-details' offer.slug %}" class="text-decoration-none text-dark">

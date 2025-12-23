@@ -1,0 +1,30 @@
+{% load filters_extras %}
+
+<div class="col-6 col-md-4 col-lg-2 filter-col">
+  <label class="form-label fw-semibold small">{{ label }}</label>
+
+  <div class="dropdown w-100">
+    <button
+      class="btn btn-outline-secondary w-100 text-start filter-btn"
+      type="button"
+      data-bs-toggle="dropdown"
+    >
+      Wybierz
+    </button>
+
+    <div class="dropdown-menu p-2 shadow filter-dropdown">
+      {% for checkbox in field %}
+        <div class="form-check">
+          {{ checkbox.tag }}
+          <label class="form-check-label text-wrap">
+            {{ checkbox.choice_label }}
+          </label>
+        </div>
+      {% endfor %}
+        <hr class="my-1">
+        <a href="?{{ request.GET.urlencode|remove_get_param:param_name }}" class="btn btn-sm btn-outline-secondary w-100 text-center mt-1">
+        Wyczyść
+        </a>
+    </div>
+  </div>
+</div>
