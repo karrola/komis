@@ -77,8 +77,8 @@ class Command(BaseCommand):
         start_time = time.time()
 
         # miasta do losowania aktywnych ofert
-        CITIES = [("Warszawa","Mazowieckie"),("Katowice","Śląskie"),
-                  ("Kraków","Małopolskie"),("Gliwice","Śląskie")]
+        CITIES = [("Warszawa","MZ"),("Katowice","SL"),
+                  ("Kraków","MA"),("Gliwice","SL")]
 
         try:
             with open(path, encoding=enc, newline="") as f:
@@ -109,12 +109,6 @@ class Command(BaseCommand):
                         type=g("Type") or None,
                         doors_number=safe_int(g("Doors_number") or None),
                         colour=g("Colour") or None,
-                        origin_country=g("Origin_country") or None,
-                        first_owner=g("First_owner") or None,
-                        first_registration_date=(
-                            parse_date_try_formats(g("First_registration_date")).date()
-                            if parse_date_try_formats(g("First_registration_date")) else None
-                        ),
                         condition=g("Condition"),
                     )
                     cars_to_create.append(car)

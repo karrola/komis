@@ -16,11 +16,11 @@ class CarAdmin(admin.ModelAdmin):
 
 # Offer admin
 class OfferAdmin(admin.ModelAdmin):
-    list_display = ("id", "car", "price", "active", "if_sold", "seller", "buyer", "offer_publication_date", "offer_end_date")
-    search_fields = ("car__vehicle_model", "car__vehicle_brand", "seller__email", "buyer__email")
+    list_display = ("id", "car", "price", "active", "if_sold", "seller", "offer_publication_date", "offer_end_date")
+    search_fields = ("car__vehicle_model", "car__vehicle_brand", "seller__email")
     list_filter = ("active", "if_sold", "price", "city", "province")
     date_hierarchy = "offer_publication_date"
-    raw_id_fields = ("car", "seller", "buyer")   # szybkie ładowanie przy dużych tabelach
+    raw_id_fields = ("car", "seller")   # szybkie ładowanie przy dużych tabelach
 
 # Rejestracja adminów
 admin.site.register(Feature, FeatureAdmin)

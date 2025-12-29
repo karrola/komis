@@ -36,14 +36,13 @@
             <!-- Sprzedawca, lokalizacja i data publikacji -->
             <div class="text-md-start w-100">
                 <p class="mb-2">
-                    <i class="fa-solid fa-user me-1"></i>{{ offer.seller.first_name|default:"-" }}
+                    <i class="fa-solid fa-user me-1"></i> {{ offer.seller.first_name|default:"-" }}
                 </p>
                 <p class="mb-5">
-                    <i class="fa-solid fa-location-dot me-1"></i>{{ offer.city|default:"-" }}, {{ offer.province|default:"-" }}
+                    <i class="fa-solid fa-location-dot me-1"></i> {{ offer.city|default:"-" }}, {{ offer.get_province_display|default:"-" }}
                 </p>
 
-                <button type="button" class="btn btn-primary w-100 mb-2">Napisz do sprzedającego</button>
-                <button type="button" class="btn btn-outline-secondary w-100 mb-5">Wyświetl numer telefonu</button>
+                <button type="button" class="btn btn-primary w-100 mb-5">Wyświetl numer telefonu</button>
 
                 <p class="text-muted small mb-0">
                     <i class="fa-solid fa-calendar-days me-1"></i>
@@ -66,17 +65,17 @@
 
                 <div class="mb-2 flex-fill">
                     <i class="fa-solid fa-gas-pump fs-3 mb-2"></i>
-                    <div>{{ offer.car.fuel_type|default:"-" }}</div>
+                    <div>{{ offer.car.get_fuel_type_display|default:"-" }}</div>
                 </div>
 
                 <div class="mb-2 flex-fill">
                     <i class="fa-solid fa-gears fs-3 mb-2"></i>
-                    <div>{{ offer.car.transmission|default:"-" }}</div>
+                    <div>{{ offer.car.get_transmission_display|default:"-" }}</div>
                 </div>
 
                 <div class="mb-2 flex-fill">
                     <i class="fa-solid fa-car-side fs-3 mb-2"></i>
-                    <div>{{ offer.car.type|default:"-" }}</div>
+                    <div>{{ offer.car.get_type_display|default:"-" }}</div>
                 </div>
 
                 <div class="mb-2 flex-fill">
@@ -137,7 +136,7 @@
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Rodzaj paliwa</th>
-                    <td class="px-3 py-2">{{ offer.car.fuel_type|default:"-" }}</td>
+                    <td class="px-3 py-2">{{ offer.car.get_fuel_type_display|default:"-" }}</td>
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Emisja CO₂</th>
@@ -145,15 +144,15 @@
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Napęd</th>
-                    <td class="px-3 py-2">{{ offer.car.drive|default:"-" }}</td>
+                    <td class="px-3 py-2">{{ offer.car.get_drive_display|default:"-" }}</td>
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Skrzynia biegów</th>
-                    <td class="px-3 py-2">{{ offer.car.transmission|default:"-" }}</td>
+                    <td class="px-3 py-2">{{ offer.car.get_transmission_display|default:"-" }}</td>
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Typ nadwozia</th>
-                    <td class="px-3 py-2">{{ offer.car.type|default:"-" }}</td>
+                    <td class="px-3 py-2">{{ offer.car.get_type_display|default:"-" }}</td>
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Liczba drzwi</th>
@@ -161,11 +160,11 @@
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Kolor</th>
-                    <td class="px-3 py-2">{{ offer.car.colour|default:"-" }}</td>
+                    <td class="px-3 py-2">{{ offer.car.get_colour_display|default:"-" }}</td>
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Stan</th>
-                    <td class="px-3 py-2">{{ offer.car.condition|default:"-" }}</td>
+                    <td class="px-3 py-2">{{ offer.car.get_condition_display|default:"-" }}</td>
                 </tr>
                 <tr class="border-top">
                     <th scope="row" class="px-3 py-2">Wyposażenie</th>

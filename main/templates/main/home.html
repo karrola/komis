@@ -102,23 +102,30 @@
                         </div>
 
                         <h4 class="h6 text-secondary mb-3">
-                            {{ offer.car.displacement_cm3 }} cm³ • {{ offer.car.power_hp }} KM
+                            {{ offer.car.displacement_cm3|default:"-" }} cm³ • 
+                            {{ offer.car.power_hp|default:"-" }} KM
                         </h4>
 
                         <h3 class="h6 mb-3 text-muted">
-                            <i class="fa-solid fa-road me-1"></i>{{ offer.car.mileage_km }} km
+                            <i class="fa-solid fa-road me-1"></i>
+                                {{ offer.car.mileage_km|default:"-" }} km
                             <span class="mx-2">•</span>
-                            <i class="fa-solid fa-gas-pump me-1"></i>{{ offer.car.fuel_type }}
+                            <i class="fa-solid fa-gas-pump me-1"></i>
+                                {{ offer.car.get_fuel_type_display|default:"-" }}
                             <span class="mx-2">•</span>
-                            <i class="fa-solid fa-gears me-1"></i>{{ offer.car.transmission }}
+                            <i class="fa-solid fa-gears me-1"></i>
+                                {{ offer.car.get_transmission_display|default:"-" }}
                             <span class="mx-2">•</span>
-                            <i class="fa-solid fa-calendar me-1"></i>{{ offer.car.production_year }}
+                            <i class="fa-solid fa-calendar me-1"></i>
+                                {{ offer.car.production_year|default:"-" }}
                         </h3>
 
                         <address class="text-muted small mb-1">
-                            <i class="fa-solid fa-user me-1"></i>{{ offer.seller.first_name }}
+                            <i class="fa-solid fa-user me-1"></i>
+                                {{ offer.seller.first_name|default:"-" }}
                             <span class="mx-2">•</span>
-                            <i class="fa-solid fa-location-dot me-1"></i>{{ offer.offer_location }}
+                            <i class="fa-solid fa-location-dot me-1"></i>
+                                {{ offer.city|default:"-" }}, {{ offer.get_province_display|default:"-" }}
                         </address>
 
                         <p class="text-muted small mb-0">

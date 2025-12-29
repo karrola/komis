@@ -11,6 +11,62 @@ class Feature(models.Model):
 
 
 class Car(models.Model):
+    FUEL_CHOICES = [
+        ('Gasoline', 'Benzyna'),
+        ('Diesel', 'Diesel'),
+        ('Gasoline + LPG', 'Benzyna + LPG'),
+        ('Hybrid', 'Hybryda'),
+        ('Electric', 'Elektryczny'),
+        ('Gasoline + CNG', 'Benzyna + CNG'),
+    ]
+
+    DRIVE_CHOICES = [
+        ('Front wheels', 'Napęd przedni'),
+        ('4x4 (permanent)', '4x4 stały'),
+        ('4x4 (attached automatically)', '4x4 automatyczny'),
+        ('Rear wheels', 'Napęd tylny'),
+        ('4x4 (attached manually)', '4x4 manualny'),
+    ]
+
+    TRANSMISSION_CHOICES = [
+        ('Automatic', 'Automatyczna'),
+        ('Manual', 'Manualna'),
+    ]
+
+    TYPE_CHOICES = [
+        ('SUV', 'SUV'),
+        ('compact', 'Kompakt'),
+        ('minivan', 'Minivan'),
+        ('city_cars', 'Samochód miejski'),
+        ('station_wagon', 'Kombi'),
+        ('sedan', 'Sedan'),
+        ('small_cars', 'Małe samochody'),
+        ('coupe', 'Coupe'),
+        ('convertible', 'Kabriolet'),
+    ]
+
+    COLOUR_CHOICES = [
+        ('gray', 'Szary'),
+        ('black', 'Czarny'),
+        ('white', 'Biały'),
+        ('red', 'Czerwony'),
+        ('silver', 'Srebrny'),
+        ('blue', 'Niebieski'),
+        ('green', 'Zielony'),
+        ('beige', 'Beżowy'),
+        ('burgundy', 'Bordowy'),
+        ('other', 'Inny'),
+        ('brown', 'Brązowy'),
+        ('golden', 'Złoty'),
+        ('yellow', 'Żółty'),
+        ('violet', 'Fioletowy'),
+    ]
+
+    CONDITION_CHOICES = [
+        ('New', 'Nowy'),
+        ('Used', 'Używany'),
+    ]
+
     vehicle_brand = models.CharField(max_length=100)
     vehicle_model = models.CharField(max_length=100)
     vehicle_version = models.CharField(max_length=150, null=True, blank=True)
@@ -19,18 +75,15 @@ class Car(models.Model):
     mileage_km = models.FloatField()
     power_hp = models.FloatField(null=True, blank=True)
     displacement_cm3 = models.FloatField(null=True, blank=True)
-    fuel_type = models.CharField(max_length=50)
+    fuel_type = models.CharField(max_length=50, choices=FUEL_CHOICES)
     co2_emissions = models.FloatField(null=True, blank=True)
-    drive = models.CharField(max_length=50, null=True, blank=True)
-    transmission = models.CharField(max_length=50)
-    type = models.CharField(max_length=50, null=True, blank=True)
+    drive = models.CharField(max_length=50, null=True, blank=True, choices=DRIVE_CHOICES)
+    transmission = models.CharField(max_length=50, choices=TRANSMISSION_CHOICES)
+    type = models.CharField(max_length=50, null=True, blank=True, choices=TYPE_CHOICES)
     doors_number = models.IntegerField(null=True, blank=True)
-    colour = models.CharField(max_length=50, null=True, blank=True)
-    origin_country = models.CharField(max_length=100, null=True, blank=True)
-    first_owner = models.CharField(max_length=100, null=True, blank=True)
-    first_registration_date = models.DateField(null=True, blank=True)
+    colour = models.CharField(max_length=50, null=True, blank=True, choices=COLOUR_CHOICES)
     sold_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    condition = models.CharField(max_length=100)
+    condition = models.CharField(max_length=100, choices=CONDITION_CHOICES)
     features = models.ManyToManyField(Feature, blank=True, related_name='cars')
 
     def __str__(self):
@@ -41,6 +94,25 @@ class Car(models.Model):
 
 
 class Offer(models.Model):
+    PROVINCE_CHOICES = [
+        ("DS", "Dolnośląskie"),
+        ("KP", "Kujawsko-pomorskie"),
+        ("LU", "Lubelskie"),
+        ("LB", "Lubuskie"),
+        ("LD", "Łódzkie"),
+        ("MA", "Małopolskie"),
+        ("MZ", "Mazowieckie"),
+        ("OP", "Opolskie"),
+        ("PK", "Podkarpackie"),
+        ("PD", "Podlaskie"),
+        ("PM", "Pomorskie"),
+        ("SL", "Śląskie"),
+        ("SK", "Świętokrzyskie"),
+        ("WM", "Warmińsko-mazurskie"),
+        ("WP", "Wielkopolskie"),
+        ("ZP", "Zachodniopomorskie"),
+    ]
+        
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='offers')
     image = models.ImageField(upload_to='car_offers/', blank=True, null=True)
     price = models.DecimalField(max_digits=12, decimal_places=2)
@@ -48,15 +120,11 @@ class Offer(models.Model):
     if_sold = models.BooleanField(default=False)   # czy przedmiot sprzedany
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
                                on_delete=models.SET_NULL, related_name='offers_sold')
-    buyer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
-                              on_delete=models.SET_NULL, related_name='offers_bought')
     offer_end_date = models.DateTimeField(null=True, blank=True)
     offer_publication_date = models.DateTimeField(default=timezone.now)
     city = models.CharField(max_length=100)
-    province = models.CharField(max_length=100)
+    province = models.CharField(max_length=2, choices=PROVINCE_CHOICES)
     description = models.TextField(max_length=1000, null=True)
-
-    updated_at = models.DateTimeField(auto_now=True)
 
     slug = models.SlugField(max_length=250, unique=True, blank=True)
 
