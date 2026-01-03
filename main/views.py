@@ -32,6 +32,7 @@ def offer_details_view(request, slug):
     offer = get_object_or_404(Offer, slug=slug)
     return render(request, 'main/offer_details.html', {'offer': offer})
 
+@login_required
 def add_offer_car_view(request):
     if request.method == "POST":
         form = CarForm(request.POST)
@@ -46,6 +47,7 @@ def add_offer_car_view(request):
 
     return render(request, 'main/add_offer_car.html', {'form': form})
 
+@login_required
 def add_offer_price_view(request):
     if request.method == "POST":
         form = PriceForm(request.POST)
@@ -59,3 +61,27 @@ def add_offer_price_view(request):
         form = PriceForm()
 
     return render(request, 'main/add_offer_price.html', {'form': form})
+
+@login_required
+def my_offers_view(request):
+    user = request.user
+
+    active = user.offers.filter(active=True, if_sold=False)
+    sold = user.offers.filter(active=False, if_sold=True)
+    not_sold = user.offers.filter(active=False, if_sold=False)
+    favourite = []
+
+    context = {
+        "active": active,
+        "sold": sold,
+        "not_sold": not_sold,
+        "favourite": favourite,
+        "categories": [
+            ("Polubione oferty", favourite),
+            ("Aktywne oferty", active),
+            ("Sprzedane oferty", sold),
+            ("Zakończone, niesprzedane oferty", not_sold),
+        ],
+    }
+
+    return render(request, "main/my_offers.html", context)

@@ -121,7 +121,7 @@ class Offer(models.Model):
     active = models.BooleanField(default=True)     # czy oferta jest aktywna
     if_sold = models.BooleanField(default=False)   # czy przedmiot sprzedany
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
-                               on_delete=models.SET_NULL, related_name='offers_sold')
+                               on_delete=models.SET_NULL, related_name='offers')
     offer_end_date = models.DateTimeField(null=True, blank=True)
     offer_publication_date = models.DateTimeField(default=timezone.now)
     city = models.CharField(max_length=100)

@@ -4,6 +4,12 @@
 {% block content %}
 <div class="offer-container my-5 mx-auto px-4" style="max-width: 1600px">
 
+    {% if request.GET.source == "my_offers" %}
+    <div class="alert alert-info mb-3">
+        To jest podgląd Twojej oferty.
+    </div>
+    {% endif %}
+
     <!-- Tytuł oferty -->
     <h1 class="h2 fw-bold mb-4">
         {{ offer.car.vehicle_brand }}
@@ -42,7 +48,9 @@
                     <i class="fa-solid fa-location-dot me-1"></i> {{ offer.city|default:"-" }}, {{ offer.get_province_display|default:"-" }}
                 </p>
 
+                {% if request.GET.source != "my_offers" %}
                 <button type="button" class="btn btn-primary w-100 mb-5">Wyświetl numer telefonu</button>
+                {% endif %}
 
                 <p class="text-muted small mb-0">
                     <i class="fa-solid fa-calendar-days me-1"></i>
