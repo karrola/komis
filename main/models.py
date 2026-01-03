@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.utils.text import slugify
+from django.core.validators import MaxValueValidator, MinValueValidator 
+from datetime import date
 
 class Feature(models.Model):
     name = models.CharField(max_length=120, unique=True)
@@ -71,16 +73,16 @@ class Car(models.Model):
     vehicle_model = models.CharField(max_length=100)
     vehicle_version = models.CharField(max_length=150, null=True, blank=True)
     vehicle_generation = models.CharField(max_length=150, null=True, blank=True)
-    production_year = models.IntegerField()
-    mileage_km = models.FloatField()
-    power_hp = models.FloatField(null=True, blank=True)
-    displacement_cm3 = models.FloatField(null=True, blank=True)
+    production_year = models.IntegerField(validators=[MinValueValidator(1920), MaxValueValidator(date.today().year)])
+    mileage_km = models.IntegerField(validators=[MinValueValidator(1)])
+    power_hp = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(30), MaxValueValidator(2000)])
+    displacement_cm3 = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(100), MaxValueValidator(1000)])
     fuel_type = models.CharField(max_length=50, choices=FUEL_CHOICES)
-    co2_emissions = models.FloatField(null=True, blank=True)
+    co2_emissions = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(500)])
     drive = models.CharField(max_length=50, null=True, blank=True, choices=DRIVE_CHOICES)
     transmission = models.CharField(max_length=50, choices=TRANSMISSION_CHOICES)
     type = models.CharField(max_length=50, null=True, blank=True, choices=TYPE_CHOICES)
-    doors_number = models.IntegerField(null=True, blank=True)
+    doors_number = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(6)])
     colour = models.CharField(max_length=50, null=True, blank=True, choices=COLOUR_CHOICES)
     sold_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     condition = models.CharField(max_length=100, choices=CONDITION_CHOICES)
@@ -124,7 +126,7 @@ class Offer(models.Model):
     offer_publication_date = models.DateTimeField(default=timezone.now)
     city = models.CharField(max_length=100)
     province = models.CharField(max_length=2, choices=PROVINCE_CHOICES)
-    description = models.TextField(max_length=1000, null=True)
+    description = models.TextField(max_length=1000, blank=True, null=True)
 
     slug = models.SlugField(max_length=250, unique=True, blank=True)
 

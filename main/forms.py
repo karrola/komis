@@ -4,113 +4,79 @@ from main.models import Car, Offer
 from django.utils import timezone
 
 # klasy które automatycznie dodają wygląd inputów bootstrapa do formularzy
-class BootstrapForm(Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)  
-        for field in self.fields.values():  
-            field.widget.attrs.setdefault('class', 'form-control')
-
-class BootstrapModelForm(ModelForm):
+class BootstrapForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs.setdefault('class', 'form-control')
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.setdefault('class', 'form-check-input')
+            elif isinstance(field.widget, forms.CheckboxSelectMultiple):
+                field.widget.attrs.setdefault('class', 'form-check-input')
+            else:
+                field.widget.attrs.setdefault('class', 'form-control')
 
-# formularz wyboru daty rezerwacji 
+
+class BootstrapModelForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.setdefault('class', 'form-check-input')
+            elif isinstance(field.widget, forms.CheckboxSelectMultiple):
+                field.widget.attrs.setdefault('class', 'form-check-input')
+            else:
+                field.widget.attrs.setdefault('class', 'form-control')
+
+# formularz informacji o samochodzie
 class CarForm(BootstrapModelForm, ModelForm):
     class Meta:
         model = Car
-        fields = ["vehicle_brand", 
-                  "vehicle_model", 
-                  "vehicle_version", 
-                  "vehicle_generation", 
-                  "production_year", 
-                  "mileage_km", 
-                  "power_hp", 
-                  "displacement_cm3", 
-                  "fuel_type", 
-                  "co2_emissions", 
-                  "drive", 
-                  "transmission", 
-                  "type", 
-                  "doors_number", 
-                  "colour", 
-                  "condition", 
-                  "features"
-                  ]
+        exclude = ['sold_price']
         
         labels = {
-            "date_start": "Data rozpoczęcia rezerwacji",
-            "date_end": "Data zakończenia rezerwacji",
-            "time_start": "Godzina rozpoczęcia rezerwacji w każdym dniu",
-            "time_end": "Godzina zakończenia rezerwacji w każdym dniu",
+                "vehicle_brand": "Marka", 
+                "vehicle_model": "Model", 
+                "vehicle_version": "Wersja", 
+                "vehicle_generation": "Generacja", 
+                "production_year": "Rok produkcji", 
+                "mileage_km": "Przebieg", 
+                "power_hp": "Moc", 
+                "displacement_cm3": "Pojemność", 
+                "fuel_type": "Rodzaj paliwa", 
+                "co2_emissions": "Emisja CO₂", 
+                "drive": "Napęd", 
+                "transmission": "Skrzynia biegów", 
+                "type": "Typ nadwozia", 
+                "doors_number": "Liczba drzwi", 
+                "colour": "Kolors", 
+                "condition": "Stan", 
+                "features": "Wyposażenie",
         }
         widgets = {
-            "date_start": forms.DateInput(attrs={'type': 'date'}),
-            "date_end": forms.DateInput(attrs={'type': 'date'}),
-            "time_start": forms.TimeInput(attrs={'type': 'time'}),
-            "time_end": forms.TimeInput(attrs={'type': 'time'}),
+            "production_year": forms.NumberInput(attrs={"min": "1920"}),
+            "mileage_km": forms.NumberInput(attrs={"min": "1"}),
+            "power_hp": forms.NumberInput(attrs={"min": "30", "max": "2000"}),
+            "displacement_cm3": forms.NumberInput(attrs={"min": "100", "max": "1000"}),
+            "co2_emissions": forms.NumberInput(attrs={"min": "1", "max": "500"}),
+            "doors_number": forms.NumberInput(attrs={"min": "1", "max": "6"}),
+            "features": forms.CheckboxSelectMultiple(),
         }
 
-    # walidacja formularza
-    def clean(self):
-        cleaned_data = super().clean()
-
-        date_start = cleaned_data.get("date_start")
-        date_end = cleaned_data.get("date_end")
-        time_start = cleaned_data.get("time_start")
-        time_end = cleaned_data.get("time_end")
-
-        # przerywamy walidację jeśli brakuje jakiejś wartości żeby uniknąć błędów w walidacji spowodowanych porównywaniem pustych wartości
-        if not all([date_start, date_end, time_start, time_end]):
-            return cleaned_data
-
-        today = timezone.localdate()
-        time_now = timezone.localtime().time()
-
-        # początek w przeszłości
-        if date_start < today:
-            self.add_error('date_start', "Nie można zarezerwować terminu w przeszłości.")
-
-        # koniec w przeszłości
-        if date_end < today:
-            self.add_error('date_end', "Nie można zarezerwować terminu w przeszłości.")
-
-        # ten sam dzień, godzina w przeszłości
-        if date_start == today and time_end < time_now:
-            self.add_error('time_end', "Nie można zarezerwować terminu w przeszłości.")
-
-        # odwrotny zakres dat
-        if date_start > date_end:
-            self.add_error('date_end', "Data zakończenia musi być późniejsza niż data rozpoczęcia.")
-
-        # odwrotny zakres godzin/zakres godzin przechodzi przez północ
-        if time_end <= time_start:
-            self.add_error('time_end', "Godzina zakończenia musi być późniejsza niż godzina początku. Jeśli chcesz dokonać rezerwacji, która przechodzi przez 00:00, musisz podzielić ją na dwie rezerwacje.")
-
-        return cleaned_data
-
-# formularz wyboryu miejsca rezerwacji
-class ReservationChooseSpaceForm(BootstrapModelForm, ModelForm):
+# formularz szczegółów oferty
+class PriceForm(BootstrapModelForm, ModelForm):
     class Meta:
-        model = Reservation
-        fields = ["date_start", "date_end", "time_start", "time_end", "parking_space", "number_plate"]
+        model = Offer
+        fields = ["price", "image", "city", "province", "description"]
         labels = {
-            "parking_space": "Miejsce parkingowe",
-            "number_plate": "Numer rejestracyjny samochodu",
+            "price": "Cena",
+            "image": "Zdjęcie",
+            "city": "Miasto",
+            "province": "Województwo",
+            "description": "Opis oferty"
         }
         widgets = {
-            "date_start": forms.HiddenInput(),
-            "date_end": forms.HiddenInput(),
-            "time_start": forms.HiddenInput(),
-            "time_end": forms.HiddenInput(),
+            "price": forms.NumberInput(attrs={"placeholder": "Przepisz proponowaną cenę lub wprowadź własną..."})
         }
-
-    # dodatkowy argument pozwalający na przekazanie listy dotępnych miejsc do wyboru w formularzu    
-    def __init__(self, *args, available_spaces=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if available_spaces is not None:
-            self.fields['parking_space'].queryset = available_spaces
 
 
 

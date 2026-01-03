@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="text-center mt-5 h5">
+    Dodawanie oferty - krok 2.
+</h1>
+
+<p class="text-muted mt-4 mx-auto" style="max-width: 800px;">
+    Na podstawie podanych informacji o samochodzie, system wyliczył proponowaną cenę sprzedaży. Uwaga! To tylko sugestia, jeśli wydaje się ona nieodpowiednia, nie należy się nią sugerować.
+</p>
+
+<p class="fw-bold mt-4 mx-auto" style="max-width: 800px;">
+    Proponowana cena sprzedaży samochodu: miaumiau
+</p>
+
+<form method="post" class="mx-auto mt-4" style="max-width: 800px;">
+    {% csrf_token %}
+    <input type="hidden" name="step" value="price">
+
+    {% for error in form.non_field_errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endfor %}
+
+    {% for field in form %}
+            <div class="my-3">
+                <label class="form-label mb-1">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary w-100 mb-4">Dodaj ofertę</button>
+</form>
+
+{% endblock %}

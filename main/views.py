@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Offer
 from django.core.paginator import Paginator
 from .filters import OfferFilter
+from .forms import CarForm, PriceForm
 
 # Create your views here.
 
@@ -30,3 +31,31 @@ def home_view(request):
 def offer_details_view(request, slug):
     offer = get_object_or_404(Offer, slug=slug)
     return render(request, 'main/offer_details.html', {'offer': offer})
+
+def add_offer_car_view(request):
+    if request.method == "POST":
+        form = CarForm(request.POST)
+        if form.is_valid():
+            print("valid")
+            form = CarForm()
+        else:
+            print("no valid")
+            print(form.errors)
+    else:
+        form = CarForm()
+
+    return render(request, 'main/add_offer_car.html', {'form': form})
+
+def add_offer_price_view(request):
+    if request.method == "POST":
+        form = PriceForm(request.POST)
+        if form.is_valid():
+            print("valid")
+            form = PriceForm()
+        else:
+            print("no valid")
+            print(form.errors)
+    else:
+        form = PriceForm()
+
+    return render(request, 'main/add_offer_price.html', {'form': form})
