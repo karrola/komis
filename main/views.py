@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Offer
 from django.core.paginator import Paginator
 from .filters import OfferFilter
-from .forms import CarForm, PriceForm
+from .forms import CarForm, PriceForm, EndOfferForm
+from django.utils import timezone
 
 # Create your views here.
 
@@ -85,3 +86,24 @@ def my_offers_view(request):
     }
 
     return render(request, "main/my_offers.html", context)
+
+@login_required
+def end_offer_view(request, slug):
+    offer = get_object_or_404(
+        Offer,
+        slug=slug,
+        seller=request.user 
+    )
+
+    if request.method == "POST":
+        form = EndOfferForm(request.POST, instance=offer)
+        if form.is_valid():
+            offer = form.save(commit=False)
+            offer.active = False
+            offer.offer_end_date = timezone.localtime()
+            offer.save()
+            return redirect("my-offers")
+    else:
+        form = EndOfferForm(instance=offer)
+
+    return render(request, "main/end_offer.html", {"form": form, "offer": offer})

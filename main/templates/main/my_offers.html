@@ -88,9 +88,9 @@
                                 {% endif %}
 
                                 {% if category == "Aktywne oferty" %}
-                                        <button type="submit" class="btn btn-outline-danger btn-sm mt-2">
+                                        <a href="{% url 'end-offer' offer.slug %}" class="btn btn-outline-danger btn-sm mt-2">
                                             Zakończ ofertę
-                                        </button>
+                                        </a>
                                 {% endif %}
 
                             </div>

@@ -79,6 +79,23 @@ class PriceForm(BootstrapModelForm, ModelForm):
         }
 
 
+# formularz zakończenia oferty
+class EndOfferForm(BootstrapModelForm, ModelForm):
+    SOLD_CHOICES = [
+        (True, 'Sprzedana'),
+        (False, 'Nie sprzedana'),
+    ]
 
+    if_sold = forms.ChoiceField(
+        choices=SOLD_CHOICES,
+        label='Status oferty',
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+
+    class Meta:
+        model = Offer
+        fields = ["if_sold"]
 
 
