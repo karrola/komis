@@ -37,15 +37,29 @@
 
                                 <!-- Tytuł i cena -->
                                 <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <h1 class="h5 fw-bold mb-0">
-                                        {{ offer.car.vehicle_brand }}
-                                        {% if offer.car.vehicle_model %} {{ offer.car.vehicle_model }}{% endif %}
-                                        {% if offer.car.vehicle_version %} {{ offer.car.vehicle_version }}{% endif %}
-                                    </h1>
 
-                                    <div class="offer-price h5 fw-bold">
-                                        {{ offer.price }} PLN
+                                    <div class="d-flex align-items-center gap-3">
+                                        <h1 class="h5 fw-bold mb-0">
+                                            {{ offer.car.vehicle_brand }}
+                                            {% if offer.car.vehicle_model %} {{ offer.car.vehicle_model }}{% endif %}
+                                            {% if offer.car.vehicle_version %} {{ offer.car.vehicle_version }}{% endif %}
+                                        </h1>
+
+                                        {% if offer in favourites %}
+                                            <form action="{% url 'favourites' offer.slug %}"
+                                                method="post"
+                                                class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit"
+                                                        class="favourite-heart-btn"
+                                                        onclick="event.stopPropagation();">
+                                                    <i class="fa-heart fa-solid"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
                                     </div>
+
+                                    <div class="offer-price h5 fw-bold">{{ offer.price }} PLN</div>
                                 </div>
 
                                 <h4 class="h6 text-secondary mb-3">

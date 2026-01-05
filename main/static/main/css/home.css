@@ -139,3 +139,25 @@ input[type="number"]::-webkit-outer-spin-button {
 .dropdown-toggle::after {
   display: none;
 }
+
+.favourite-heart-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.favourite-heart-btn i {
+    color: #999;
+    font-size: 1.3rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.favourite-heart-btn:hover i {
+    color: #e63946;
+    transform: scale(1.25);
+}
+
+.favourite-heart-btn .fa-solid {
+    color: #e63946;
+}

@@ -11,6 +11,13 @@ from .ml.predictor import predict_price
 
 def home_view(request):
     offers = Offer.objects.filter(active = True, if_sold = False).select_related('car', 'seller')
+    user = request.user
+    user_offers = []
+    favourites = []
+
+    if user.is_authenticated:
+        user_offers = user.offers.filter(active=True, if_sold=False)
+        favourites = user.favourites.all()
 
     offer_filter = OfferFilter(request.GET, queryset=offers)
     filtered_count = offer_filter.qs.count()
@@ -26,6 +33,8 @@ def home_view(request):
         'filtered_count': filtered_count,
         'page_obj': page_obj,
         'query_params': query_params.urlencode(),
+        'user_offers': user_offers,
+        'favourites': favourites,
     }
 
     return render(request, "main/home.html", context)
@@ -36,8 +45,9 @@ def offer_details_view(request, slug):
         request.user.is_authenticated
         and offer.seller_id == request.user.id
     )
+    favourites = request.user.favourites.all()
 
-    return render(request, "main/offer_details.html", {"offer": offer, "is_my_offer": is_my_offer})
+    return render(request, "main/offer_details.html", {"offer": offer, "is_my_offer": is_my_offer, "favourites": favourites})
 
 @login_required
 def add_offer_car_view(request):
@@ -107,15 +117,15 @@ def my_offers_view(request):
     active = user.offers.filter(active=True, if_sold=False)
     sold = user.offers.filter(active=False, if_sold=True)
     not_sold = user.offers.filter(active=False, if_sold=False)
-    favourite = []
+    favourites = user.favourites.all()
 
     context = {
         "active": active,
         "sold": sold,
         "not_sold": not_sold,
-        "favourite": favourite,
+        "favourites": favourites,
         "categories": [
-            ("Polubione oferty", favourite),
+            ("Polubione oferty", favourites),
             ("Aktywne oferty", active),
             ("Sprzedane oferty", sold),
             ("Zakończone, niesprzedane oferty", not_sold),
@@ -144,3 +154,15 @@ def end_offer_view(request, slug):
         form = EndOfferForm(instance=offer)
 
     return render(request, "main/end_offer.html", {"form": form, "offer": offer})
+
+@login_required
+def favourites_view(request, slug):
+    user = request.user
+    offer = get_object_or_404(Offer, slug=slug)
+
+    if offer in user.favourites.all():
+        user.favourites.remove(offer)
+    else:
+        user.favourites.add(offer)
+
+    return redirect(request.META.get('HTTP_REFERER', 'home'))

@@ -75,8 +75,11 @@
     <ul class="list-unstyled px-4 my-4 w-100 mx-auto">
         {% for offer in page_obj %}
             <li class="mb-4">
-                <a href="{% url 'offer-details' offer.slug %}" class="text-decoration-none text-dark">
-                <article class="p-4 border rounded shadow-sm offer-card bg-white d-flex align-items-start">
+                    <article
+                    class="p-4 border rounded shadow-sm offer-card bg-white d-flex align-items-start"
+                    onclick="window.location.href='{% url 'offer-details' offer.slug %}'"
+                    style="cursor: pointer;"
+                    >
 
                     {% if offer.image %}
                         <div class="offer-image-wrapper me-4">
@@ -92,11 +95,27 @@
 
                         <!-- Tytuł i cena w jednej linii -->
                         <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h1 class="h5 fw-bold mb-0">
-                                {{ offer.car.vehicle_brand }}
-                                {% if offer.car.vehicle_model %} {{ offer.car.vehicle_model }}{% endif %}
-                                {% if offer.car.vehicle_version %} {{ offer.car.vehicle_version }}{% endif %}
-                            </h1>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <h1 class="h5 fw-bold mb-0">
+                                    {{ offer.car.vehicle_brand }}
+                                    {% if offer.car.vehicle_model %} {{ offer.car.vehicle_model }}{% endif %}
+                                    {% if offer.car.vehicle_version %} {{ offer.car.vehicle_version }}{% endif %}
+                                </h1>
+
+                                {% if offer not in user_offers %}
+                                    <form action="{% url 'favourites' offer.slug %}"
+                                        method="post"
+                                        class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="favourite-heart-btn"
+                                                onclick="event.stopPropagation();">
+                                            <i class="fa-heart {% if offer in favourites %}fa-solid{% else %}fa-regular{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
 
                             <div class="offer-price h5 fw-bold">{{ offer.price }} PLN</div>
                         </div>
@@ -133,7 +152,6 @@
                         </p>
                     </div>
                 </article>
-                </a>
             </li>
         {% endfor %}
     </ul>

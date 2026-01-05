@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load humanize %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'main/css/offer_details.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="offer-container my-5 mx-auto px-4" style="max-width: 1600px">
@@ -11,11 +16,27 @@
     {% endif %}
 
     <!-- Tytuł oferty -->
-    <h1 class="h2 fw-bold mb-4">
-        {{ offer.car.vehicle_brand }}
-        {% if offer.car.vehicle_model %} {{ offer.car.vehicle_model }}{% endif %}
-        {% if offer.car.vehicle_version %} {{ offer.car.vehicle_version }}{% endif %}
-    </h1>
+    <div class="d-flex align-items-center gap-3">
+        <h1 class="h2 fw-bold mb-4">
+            {{ offer.car.vehicle_brand }}
+            {% if offer.car.vehicle_model %} {{ offer.car.vehicle_model }}{% endif %}
+            {% if offer.car.vehicle_version %} {{ offer.car.vehicle_version }}{% endif %}
+        </h1>
+
+        {% if not is_my_offer %}
+            <form action="{% url 'favourites' offer.slug %}"
+                method="post"
+                class="d-inline mb-4">
+                {% csrf_token %}
+                <button type="submit"
+                        class="favourite-heart-btn"
+                        onclick="event.stopPropagation();">
+                    <i class="fa-heart {% if offer in favourites %}fa-solid{% else %}fa-regular{% endif %}"></i>
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
 
     <!-- Sekcja główna: zdjęcie i podstawowe info -->
     <div class="bg-light p-4 rounded shadow-sm mb-4 d-flex flex-column flex-md-row align-items-start">
