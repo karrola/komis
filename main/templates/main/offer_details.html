@@ -15,6 +15,12 @@
     </div>
     {% endif %}
 
+    {% if not offer.active %}
+    <div class="alert alert-danger mb-3">
+        Ta oferta zakończyła się.
+    </div>
+    {% endif %}
+
     <!-- Tytuł oferty -->
     <div class="d-flex align-items-center gap-3">
         <h1 class="h2 fw-bold mb-4">
