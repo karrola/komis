@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Offer
+from .models import Offer, Car
 from django.core.paginator import Paginator
 from .filters import OfferFilter
 from .forms import CarForm, PriceForm, EndOfferForm
 from django.utils import timezone
+from .ml.predictor import predict_price
 
 # Create your views here.
 
@@ -31,18 +32,29 @@ def home_view(request):
 
 def offer_details_view(request, slug):
     offer = get_object_or_404(Offer, slug=slug)
-    return render(request, 'main/offer_details.html', {'offer': offer})
+    is_my_offer = (
+        request.user.is_authenticated
+        and offer.seller_id == request.user.id
+    )
+
+    return render(request, "main/offer_details.html", {"offer": offer, "is_my_offer": is_my_offer})
 
 @login_required
 def add_offer_car_view(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = CarForm(request.POST)
         if form.is_valid():
-            print("valid")
-            form = CarForm()
-        else:
-            print("no valid")
-            print(form.errors)
+            car_data = form.cleaned_data.copy()
+            # ManyToManyField -> lista ID (JSON-safe)
+            car_data['features'] = list(
+                car_data['features'].values_list('id', flat=True)
+            )
+
+            request.session['car_data'] = car_data
+            predicted_price = predict_price(car_data)
+            request.session['predicted_price'] = predicted_price
+
+            return redirect('add-offer-price')
     else:
         form = CarForm()
 
@@ -50,18 +62,43 @@ def add_offer_car_view(request):
 
 @login_required
 def add_offer_price_view(request):
-    if request.method == "POST":
-        form = PriceForm(request.POST)
-        if form.is_valid():
-            print("valid")
-            form = PriceForm()
-        else:
-            print("no valid")
-            print(form.errors)
-    else:
-        form = PriceForm()
+    car_data = request.session.get('car_data')
+    predicted_price = request.session.get('predicted_price')
 
-    return render(request, 'main/add_offer_price.html', {'form': form})
+    if not car_data or predicted_price is None:
+        return redirect('add-offer-car')
+
+    if request.method == 'POST':
+        form = PriceForm(request.POST, request.FILES)
+        if form.is_valid():
+            # wyciągamy features z danych auta
+            features_ids = car_data.pop('features')
+
+            # zapis auta (bez M2M)
+            car = Car.objects.create(**car_data)
+
+            # zapis relacji ManyToMany
+            car.features.set(features_ids)
+
+            # zapis oferty
+            offer = form.save(commit=False)
+            offer.car = car
+            offer.seller = request.user
+            offer.save()
+
+            # czyszczenie sesji
+            request.session.pop('car_data', None)
+            request.session.pop('predicted_price', None)
+
+            return redirect('offer-details', slug=offer.slug)
+    else:
+        form = PriceForm(initial={'price': predicted_price})
+
+    return render(request, 'main/add_offer_price.html', {
+        'form': form,
+        'car_data': car_data,
+        'predicted_price': predicted_price,
+    })
 
 @login_required
 def my_offers_view(request):

@@ -20,7 +20,7 @@
         <ul class="list-unstyled px-4 my-4 w-100 mx-auto">
             {% for offer in offers %}
                 <li class="mb-4">
-                    <a href="{% url 'offer-details' offer.slug %}?source=my_offers" class="text-decoration-none text-dark">
+                    <a href="{% url 'offer-details' offer.slug %}" class="text-decoration-none text-dark">
                         <article class="p-4 border rounded shadow-sm offer-card bg-white d-flex align-items-start">
 
                             {% if offer.image %}

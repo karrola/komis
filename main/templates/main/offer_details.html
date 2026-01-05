@@ -4,7 +4,7 @@
 {% block content %}
 <div class="offer-container my-5 mx-auto px-4" style="max-width: 1600px">
 
-    {% if request.GET.source == "my_offers" %}
+    {% if is_my_offer %}
     <div class="alert alert-info mb-3">
         To jest podgląd Twojej oferty.
     </div>
@@ -48,7 +48,7 @@
                     <i class="fa-solid fa-location-dot me-1"></i> {{ offer.city|default:"-" }}, {{ offer.get_province_display|default:"-" }}
                 </p>
 
-                {% if request.GET.source != "my_offers" %}
+                {% if not is_my_offer %}
                 <button type="button" class="btn btn-primary w-100 mb-5">Wyświetl numer telefonu</button>
                 {% endif %}
 

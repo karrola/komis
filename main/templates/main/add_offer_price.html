@@ -14,9 +14,8 @@
     Proponowana cena sprzedaży samochodu: miaumiau
 </p>
 
-<form method="post" class="mx-auto mt-4" style="max-width: 800px;">
+<form method="post" enctype="multipart/form-data" class="mx-auto mt-4" style="max-width: 800px;">
     {% csrf_token %}
-    <input type="hidden" name="step" value="price">
 
     {% for error in form.non_field_errors %}
         <div class="invalid-feedback d-block">{{ error }}</div>
