@@ -1,6 +1,6 @@
 # KOMIS - web application for a car lot
 
-Project was created in collaboration with @pirate1rat
+Project was created in collaboration with [pirate1rat](https://github.com/pirate1rat)
 
 ## Technologies
 
