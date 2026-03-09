@@ -45,7 +45,8 @@ def offer_details_view(request, slug):
         request.user.is_authenticated
         and offer.seller_id == request.user.id
     )
-    favourites = request.user.favourites.all()
+    if request.user.is_authenticated: favourites = request.user.favourites.all()
+    else: favourites = None
 
     return render(request, "main/offer_details.html", {"offer": offer, "is_my_offer": is_my_offer, "favourites": favourites})
 
