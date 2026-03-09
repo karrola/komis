@@ -88,7 +88,7 @@ class Command(BaseCommand):
 
                     # walidacja wymaganych pól
                     required_fields = [g("Vehicle_brand"), g("Vehicle_model"), g("Production_year"),
-                                       g("Mileage_km"), g("Fuel_type"), g("Transmission"), g("Condition")]
+                                       g("Mileage_km"), g("Fuel_type"), g("Transmission"), g("Condition"), g("Power_HP")]
                     if any(not f for f in required_fields):
                         continue
 
@@ -100,7 +100,7 @@ class Command(BaseCommand):
                         vehicle_generation=g("Vehicle_generation") or None,
                         production_year=safe_int(g("Production_year")),
                         mileage_km=safe_float(g("Mileage_km")),
-                        power_hp=safe_float(g("Power_HP") or None),
+                        power_hp=safe_float(g("Power_HP")),
                         displacement_cm3=safe_float(g("Displacement_cm3") or None),
                         fuel_type=g("Fuel_type"),
                         co2_emissions=safe_float(g("CO2_emissions") or None),

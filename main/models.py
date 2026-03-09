@@ -75,7 +75,7 @@ class Car(models.Model):
     vehicle_generation = models.CharField(max_length=150, null=True, blank=True)
     production_year = models.IntegerField(validators=[MinValueValidator(1920), MaxValueValidator(date.today().year)])
     mileage_km = models.IntegerField(validators=[MinValueValidator(1)])
-    power_hp = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(30), MaxValueValidator(2000)])
+    power_hp = models.IntegerField(validators=[MinValueValidator(30), MaxValueValidator(2000)])
     displacement_cm3 = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(100), MaxValueValidator(1000)])
     fuel_type = models.CharField(max_length=50, choices=FUEL_CHOICES)
     co2_emissions = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(500)])
