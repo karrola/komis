@@ -42,6 +42,6 @@ db.sqlite3
 .env
 
 # modele ML
-/main/ml/model
+/main/ml/model/*
 /MLmodels
 /catboost_info

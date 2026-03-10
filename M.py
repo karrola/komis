@@ -2,13 +2,26 @@ import numpy as np
 import pandas as pd
 from main.ml.transformers import ExclusiveCars, YearsExtractor, OutlierFlagTransformer
 
-cars = pd.read_csv("car_sales.csv")
+import sqlite3
+import pandas as pd
+from contextlib import closing
+
+num_attributes = ['years', 'mileage_km', 'power_hp', 'co2_emissions', 'vehicle_brand']
+cat_attributes = ['condition', 'transmission', 'type', 'drive', 'fuel_type']
+db_path = 'db.sqlite3'
+query = "SELECT production_year, mileage_km, power_hp, co2_emissions, vehicle_brand, " \
+"condition, transmission, type, drive, fuel_type, sold_price FROM main_car WHERE sold_price is not NULL"
+
+
+with closing(sqlite3.connect(db_path)) as conn:
+    cars = pd.read_sql_query(query, conn)
+    print("reading from db")
 np.random.seed(1)
 
 from sklearn.model_selection import train_test_split
-train_set_df, test_set_df = train_test_split(cars, test_size=0.15 , random_state=0)
-labels = train_set_df['Price']
-test_labels = test_set_df['Price']
+train_set_df, test_set_df = train_test_split(cars, test_size=0.01 , random_state=0)
+labels = train_set_df['sold_price']
+test_labels = test_set_df['sold_price']
 
 
 ####################################

@@ -19,4 +19,4 @@ print("############### PO ZMIANACH ################")
 
 print(data.loc[691])
 
-data.to_csv("car_sales.csv")
+data.to_csv("car_sales.csv", index=False)
