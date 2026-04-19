@@ -2,6 +2,8 @@
 
 Project was created in collaboration with [pirate1rat](https://github.com/pirate1rat)
 
+https://github.com/user-attachments/assets/ae81648c-f5d5-4f99-894d-1327a61c851c
+
 ## Technologies
 
 Python, Django, SQLite, HTML5 + DjangoTemplates, Bootstrap 5
