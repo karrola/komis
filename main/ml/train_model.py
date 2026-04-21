@@ -1,6 +1,16 @@
 import numpy as np
 import pandas as pd
-from main.ml.transformers import ExclusiveCars, YearsExtractor
+
+import sys
+from pathlib import Path
+import os
+import django
+BASE_DIR = Path(__file__).resolve().parent.parent  # dostosuj poziom
+sys.path.append(str(BASE_DIR))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "komis.settings")
+django.setup()
+
+from main.ml.custom_transformers import ExclusiveCars
 
 import sqlite3
 import pandas as pd
@@ -89,7 +99,7 @@ if __name__ == "__main__":
     stacking_model = StackingRegressor(
         estimators=[
             ('rf', rf_model),
-            ('lgbm', lgbm_model),
+            #('lgbm', lgbm_model),
         ],
         final_estimator=Ridge(alpha=7.114476009343421)
     )
@@ -106,6 +116,8 @@ if __name__ == "__main__":
     from joblib import dump
     from datetime import datetime
     from pathlib import Path
+    import json
+    from django.conf import settings
 
     print(1 - mape(test_labels, final_model.predict(test_set_df)))
 
@@ -113,5 +125,8 @@ if __name__ == "__main__":
     if not final_model_path.exists():
         final_model_path.mkdir(parents=True, exist_ok=True)
     
-    fname = f"{final_model_path}\\final_model"
+    fname = f"{final_model_path}\\model{datetime.now().strftime('%Y%m%d_%H%M%S')}.joblib"
     dump(final_model, fname, compress=3)
+
+    with open(final_model_path / "latest_version.json", 'w') as f:
+        json.dump({"model_path": str(fname), "trained_rows": len(train_set_df)}, f)

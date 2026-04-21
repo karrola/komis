@@ -163,3 +163,7 @@ LOGOUT_REDIRECT_URL = "home"
 # upload plików
 MEDIA_ROOT = BASE_DIR / "uploads" 
 MEDIA_URL = "/files/"
+
+# parametry schedulera trenowania modelu
+ML_RETRAIN_THRESHOLD = 500
+ML_CHECK_EVERY_MINUTES = 60
