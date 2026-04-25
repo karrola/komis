@@ -4,9 +4,8 @@ from django.db import transaction
 from apscheduler.schedulers.background import BackgroundScheduler
 import json
 import subprocess
-import sys
+import sys, os
 from main.models import Car
-# podmień na swój model z danymi
 
 scheduler = BackgroundScheduler(timezone="Europe/Warsaw")
 started = False
@@ -24,8 +23,20 @@ def get_trained_rows():
 
 
 def run_training_script():
-    script_path = Path(settings.BASE_DIR) / "main\\ml\\train_model.py"
-    subprocess.run([sys.executable, str(script_path)], check=True)
+    PROJECT_ROOT = Path(__file__).resolve().parents[2]
+    script_path = Path(__file__).resolve().parent / "train_model.py"
+    print(script_path)
+    env = os.environ.copy()
+
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{PROJECT_ROOT}{os.pathsep}{existing}"
+
+    subprocess.run(
+        [sys.executable, "-m", "main.ml.train_model"],
+        cwd=str(PROJECT_ROOT),
+        env=env,
+        check=True,
+    )
 
 
 def check_and_train():

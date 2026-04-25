@@ -9,13 +9,24 @@ import subprocess
 import sys
 from main.ml.custom_transformers import ExclusiveCars, YearsExtractor, OutlierFlagTransformer #do not delete!
 
-BASE_MODEL_PATH = Path(settings.BASE_DIR) / "main/ml/model"
-latest_version = BASE_MODEL_PATH / "latest_version.json"
+latest_version = Path(settings.BASE_DIR) / "main/ml/model" / "latest_version.json"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+print(f"PROJECT_ROOT: {PROJECT_ROOT}")
 
 if not latest_version.exists():
     script_path = Path(__file__).resolve().parent / "train_model.py"
     print(script_path)
-    subprocess.run([sys.executable, str(script_path)], check=True)
+    env = os.environ.copy()
+
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{PROJECT_ROOT}{os.pathsep}{existing}"
+
+    subprocess.run(
+        [sys.executable, "-m", "main.ml.train_model"],  # -m zamiast ścieżki do pliku!
+        cwd=str(PROJECT_ROOT),
+        env=env,
+        check=True,
+    )
 
 with open(latest_version, "r", encoding="utf-8") as f:
     tmp = json.load(f)
@@ -29,6 +40,7 @@ if os.path.exists(model_path):
     except Exception as e:
         print(f"Unable to load model: {e}")
         print(model_path)
+print("model has been loaded")
 
 
 def predict_price(car_data):

@@ -10,7 +10,7 @@ sys.path.append(str(BASE_DIR))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "komis.settings")
 django.setup()
 
-from main.ml.custom_transformers import ExclusiveCars
+from main.ml.custom_transformers import ExclusiveCars, YearsExtractor
 
 import sqlite3
 import pandas as pd
