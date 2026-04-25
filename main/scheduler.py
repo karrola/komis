@@ -38,6 +38,9 @@ def run_training_script():
         check=True,
     )
 
+    from main.ml.predictor import load_model
+    load_model()
+
 
 def check_and_train():
     current_rows = Car.objects.count()
